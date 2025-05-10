@@ -96,10 +96,16 @@
                 <a href="#contact" class="text-gray-300 hover:text-accent transition">Contact Us</a>
             </div>
             <div class="md:hidden">
-                <button class="text-white focus:outline-none">
-                    <i class="fas fa-bars"></i>
+                <button id="mobileMenuButton" class="text-white focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
+        </div>
+        <div id="mobileMenu" class="hidden md:hidden bg-dark/95 backdrop-blur-sm border-t border-gray-700">
+            <a href="#home" class="block py-3 px-6 text-gray-300 hover:text-accent transition hover:bg-primary/30">Home</a>
+            <a href="#about" class="block py-3 px-6 text-gray-300 hover:text-accent transition hover:bg-primary/30">About Us</a>
+            <a href="#products" class="block py-3 px-6 text-gray-300 hover:text-accent transition hover:bg-primary/30">Products & Services</a>
+            <a href="#contact" class="block py-3 px-6 text-gray-300 hover:text-accent transition hover:bg-primary/30">Contact Us</a>
         </div>
     </nav>
 
@@ -228,11 +234,11 @@
                 </div>
 
                 <div class="card rounded-xl overflow-hidden col-span-12 md:col-span-5 row-span-2 animate-on-scroll">
-                    <img src="imgs/ai_image_1.png" alt="AI Agent Technology" class="w-full h-full object-cover">
+                    <img src="AI Agent Technology.jpg" alt="AI Agent Technology" class="w-full h-full object-cover">
                 </div>
 
                 <div class="card rounded-xl overflow-hidden col-span-12 md:col-span-5 row-span-2 animate-on-scroll">
-                    <img src="imgs/education_tech.png" alt="Educational AI System" class="w-full h-full object-cover">
+                    <img src="Educational AI Technology.png" alt="Educational AI System" class="w-full h-full object-cover">
                 </div>
 
                 <div class="card rounded-xl overflow-hidden col-span-12 md:col-span-7 row-span-2 animate-on-scroll">
@@ -437,10 +443,9 @@
     </footer>
 
     <script>
-        // Scroll animation
         document.addEventListener('DOMContentLoaded', function() {
+            // Scroll animation
             const animateElements = document.querySelectorAll('.animate-on-scroll');
-            
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -450,7 +455,6 @@
             }, {
                 threshold: 0.1
             });
-            
             animateElements.forEach(element => {
                 observer.observe(element);
             });
@@ -459,11 +463,17 @@
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
                     const targetId = this.getAttribute('href');
                     const targetElement = document.querySelector(targetId);
                     
                     if (targetElement) {
+                        // Also close mobile menu if open when a link is clicked
+                        if (!mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                             menuIcon.classList.remove('fa-times');
+                             menuIcon.classList.add('fa-bars');
+                        }
+
                         window.scrollTo({
                             top: targetElement.offsetTop - 60, // Adjust for fixed navbar height
                             behavior: 'smooth'
@@ -473,25 +483,34 @@
             });
 
             // Mobile menu toggle
-            const mobileMenuButton = document.querySelector('.md\\:hidden button');
-            const mobileMenu = document.querySelector('.hidden.md\\:flex.space-x-8'); // This needs adjustment if you add a proper mobile menu
-            
-            if (mobileMenuButton && mobileMenu) { // Placeholder for actual mobile menu logic
+            const mobileMenuButton = document.getElementById('mobileMenuButton'); // Use ID
+            const mobileMenu = document.getElementById('mobileMenu'); // Use ID for the new mobile menu div
+            const menuIcon = mobileMenuButton.querySelector('i'); // Get the icon element
+
+            if (mobileMenuButton && mobileMenu && menuIcon) {
                 mobileMenuButton.addEventListener('click', () => {
-                    // You'll need to implement how the mobile menu appears.
-                    // For example, toggling a class on a dedicated mobile menu element.
-                    // The current 'mobileMenu' selector targets the desktop menu.
-                    // console.log("Mobile menu button clicked. Implement menu toggle logic.");
+                    mobileMenu.classList.toggle('hidden'); // Toggle visibility of the mobile menu
+                    // Toggle icon
+                    if (mobileMenu.classList.contains('hidden')) {
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                    } else {
+                        menuIcon.classList.remove('fa-bars');
+                        menuIcon.classList.add('fa-times');
+                    }
+                });
+
+                // Close mobile menu when a link inside it is clicked (for single-page navigation)
+                const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+                mobileMenuLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                        // The smooth scroll for these links is handled by the general 'a[href^="#"]' listener
+                    });
                 });
             }
-        });
-
-        // Scroll animation (existing code)
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... (your existing animation and smooth scroll code) ...
-
-            // Mobile menu toggle (existing code)
-            // ... (your existing mobile menu code) ...
 
             // Contact Form Submission with AJAX
             const contactForm = document.getElementById('contactForm');
@@ -499,7 +518,7 @@
 
             if (contactForm && formStatus) {
                 contactForm.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevent default form submission which causes a page reload
+                    event.preventDefault(); 
 
                     const formData = new FormData(contactForm);
                     const submitButton = contactForm.querySelector('button[type="submit"]');
@@ -507,13 +526,13 @@
 
                     submitButton.innerHTML = 'Sending...';
                     submitButton.disabled = true;
-                    formStatus.innerHTML = ''; // Clear previous status
+                    formStatus.innerHTML = ''; 
 
                     fetch(contactForm.action, {
                         method: 'POST',
                         body: formData,
                         headers: {
-                            'Accept': 'application/json' // Important for Formspree to send JSON response
+                            'Accept': 'application/json' 
                         }
                     })
                     .then(response => {
@@ -521,9 +540,8 @@
                         submitButton.disabled = false;
                         if (response.ok) {
                             formStatus.innerHTML = '<p class="text-green-400">Thanks for your message! I will get back to you soon.</p>';
-                            contactForm.reset(); // Clear the form fields
+                            contactForm.reset(); 
                         } else {
-                            // Try to parse the error response from Formspree
                             response.json().then(data => {
                                 if (Object.hasOwn(data, 'errors')) {
                                     formStatus.innerHTML = `<p class="text-red-400">${data["errors"].map(error => error["message"]).join(", ")}</p>`;
@@ -531,7 +549,6 @@
                                     formStatus.innerHTML = '<p class="text-red-400">Oops! There was a problem submitting your form. Please try again later.</p>';
                                 }
                             }).catch(() => {
-                                // Fallback error message if parsing fails
                                 formStatus.innerHTML = '<p class="text-red-400">Oops! There was a problem submitting your form. Please try again later.</p>';
                             });
                         }
